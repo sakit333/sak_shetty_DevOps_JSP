@@ -1,0 +1,277 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo "Hello Ghatak"
+            }
+        }
+    }
+}
+// -----------------------------
+pipeline {
+    agent any
+
+    stages {
+        stage('Node Info') {
+            steps {
+                sh """
+                pwd
+                uptime
+                whoami
+                hostname
+                echo $JOB_NAME
+                echo $BUILD_ID
+                """
+            }
+        }
+    }
+}
+// -----------------------------------
+pipeline {
+    agent any
+
+    stages {
+        stage('Script Block') {
+            steps {
+                echo "am from steps block"
+                script {
+                    echo "am from script block"
+                }
+            }
+        }
+    }
+}
+// -----------------------------------------
+pipeline {
+    agent any
+
+    environment {
+        company = 'wipro'
+        batch = 'DevOps'
+    }
+    stages {
+        stage('company name') {
+            steps {
+                echo "the company name is: $company"
+            }
+        }
+        stage('batch name') {
+            steps {
+                echo "the batch name is: $batch"
+            }
+        }
+    }
+}
+// ----------------------------------------------------
+pipeline {
+    agent any
+
+    stages {
+        stage('with env') {
+            steps {
+                echo "jenkins job name is: ${env.JOB_NAME}"
+                echo "jenkins build id is: ${env.BUILD_ID}"
+            }
+        }
+        stage('without env') {
+            steps {
+                echo "the batch name is: $JOB_NAME"
+                echo "the batch name is: $BUILD_ID"
+            }
+        }
+    }
+}
+// ----------------------------------------------------
+pipeline {
+    agent any
+
+    stages {
+        stage('print ghatak') {
+            steps {
+                echo "Hello Ghatak"
+            }
+        }
+    }
+    post {
+        always{
+            echo "it will execute always"
+        }
+        success {
+            echo "build is success"
+        }
+        failure {
+            echo "build is failure"
+        }
+    }
+}
+// ---------------------------------------------------------
+pipeline {
+    agent any
+
+    stages {
+        stage('print ghatak') {
+            steps {
+                echo "Hello Ghatak"
+            }
+            post {
+                always{
+                    echo "it will execute always in the ghatak stage"
+                }
+                success {
+                    echo "build is success in ghatak stage"
+                }
+                failure {
+                    echo "build is failure in ghatak stage"
+                }
+            }
+        }
+    }
+    post {
+        always{
+            echo "it will execute always"
+        }
+        success {
+            echo "build is success"
+        }
+        failure {
+            echo "build is failure"
+        }
+    }
+}
+// ---------------------------------------------
+pipeline {
+    agent any
+
+    stages {
+        stage('clean') {
+            steps {
+                echo "mvn clean"
+            }
+        }
+        stage('validate') {
+            steps {
+                echo "mvn validate"
+            }
+        }
+        stage('compile') {
+            steps {
+                echo "mvn compile"
+            }
+        }
+        stage('test') {
+            steps {
+                echo "mvn test"
+            }
+        }
+        stage('package') {
+            steps {
+                echo "mvn package"
+            }
+        }       
+    }
+}
+// --------------------------------------------
+pipeline {
+    agent any
+
+    stages {
+        stage('github src') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sakit333/tribes.git'
+            }
+            post {
+                success {
+                    echo "git pull success"
+                }
+                failure {
+                    echo "git pull failure"
+                }
+            }
+        }     
+    }
+}
+// -------------------------------------
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage('github src') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sakit333/tribes.git'
+            }
+        } 
+        stage("Build stage") {
+            steps {
+                sh 'mvn clean package'
+            }
+        }    
+    }
+    post {
+        success {
+            echo "build success"
+        }
+        failure {
+            echo "build failure"
+        }
+    }
+}
+// -------------------------------------------
+pipeline {
+    agent {
+        label 'java_node'
+    }
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage('github src') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sakit333/tribes.git'
+            }
+        } 
+        stage("Build stage") {
+            steps {
+                sh 'mvn clean package'
+            }
+        }    
+    }
+}
+// -------------------------------------
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage('github src') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sakit333/tribes.git'
+            }
+        } 
+        stage('Build clean') {
+            steps {
+                sh 'mvn clean'
+            }
+        }
+        stage("Build parallel") {
+            parallel {
+                stage('build and test') {
+                    steps {
+                        sh 'mvn clean test'
+                    }
+                }
+                stage('build and package') {
+                    steps {
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+        }    
+    }
+}
