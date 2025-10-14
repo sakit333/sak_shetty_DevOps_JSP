@@ -195,7 +195,7 @@
   user: ansible
   become: yes
   connection: ssh
-  gather_facts: no
+  gather_facts: yes
   tasks:
     - name: Install apache2 on Debian
       apt:
