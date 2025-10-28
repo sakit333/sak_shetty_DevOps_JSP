@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+spec:
+  containers:
+    - name: login
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo am login; sleep 2; done"]
+
+# commands:
+# kubectl apply -f pod.yml
+# kubectl get pods
+# kubectl get pods -o wide
+# kubectl describe pod flipkart
+# kubectl logs flipkart
+# kubectl logs -f flipkart
+# kubectl delete -f pod.yml
+# =============================================
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+spec:
+  containers:
+    - name: login
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo am login; sleep 2; done"]
+    - name: home
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo am home; sleep 1; done"]
+
+# commands:
+# kubectl apply -f pod.yml
+# kubectl get pods
+# kubectl get pods -o wide
+# kubectl describe pod flipkart
+# kubectl logs -f flipkart -c login
+# kubectl logs -f flipkart -c home
+# kubectl delete -f pod.yml
+# =============================================
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zomato
+spec:
+  containers:
+    - name: home
+      image: httpd
+      ports:
+        - containerPort: 80
+
+# commands:
+# kubectl apply -f pod.yml
+# kubectl get pods
+# kubectl get pods -o wide
+# kubectl describe pod flipkart
+# curl 10.40.0.1:80
+# kubectl logs zomato
+# kubectl delete -f pod.yml
+# =============================================
