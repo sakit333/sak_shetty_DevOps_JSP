@@ -64,3 +64,117 @@ spec:
 # kubectl logs zomato
 # kubectl delete -f pod.yml
 # =============================================
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+  labels:
+    batch: ghatak
+    env: dev
+spec:
+  containers:
+    - name: login
+      image: httpd
+      ports:
+        - containerPort: 80
+
+# commands:
+# kubectl apply -f pod.yml
+# kubectl get pods --show-labels
+# kubectl get pods -l batch=ghatak
+# kubectl get pods -l batch!=ghatak
+# kubectl label pod flipkart team=jsp
+# kubectl get pods --show-labels
+# kubectl get pods -l team=jsp
+# kubectl get pods -l team!=jsp
+# kubectl delete -f pod.yml
+# =============================================
+
+---
+# cat ns.yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+
+# cat pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+  labels:
+    batch: ghatak
+    env: dev
+spec:
+  containers:
+    - name: login
+      image: httpd
+      ports:
+        - containerPort: 80
+# commands
+# kubectl apply -f ns.yml
+# kubectl apply -f pod.yml -n dev
+# kubectl get pods -n dev
+# kubectl delete -f pod.yml -n dev
+# =============================================
+
+# cat ns.yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+# cat pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+  namespace: dev
+  labels:
+    batch: ghatak
+    env: dev
+spec:
+  containers:
+    - name: login
+      image: httpd
+      ports:
+        - containerPort: 80
+
+# commands
+# kubectl apply -f ns.yml
+# kubectl apply -f pod.yml 
+# kubectl get pods -n dev
+# kubectl delete -f pod.yml 
+
+# =============================================
+
+# cat rc.yml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: flipkart
+spec:
+  replicas: 2
+  selector:
+    env: dev
+  template:
+    metadata:
+      name: httpd
+      labels:
+        env: dev
+    spec:
+      containers:
+      - name: login
+        image: httpd
+        ports:
+        - containerPort: 80
+
+# command:
+# kubectl apply -f rc.yml
+# kubectl get rc
+# kubectl get pods
+# kubectl delete pod flipkart-6fvtg
+# kubectl scale --replicas=4 rc flipkart
+# kubectl scale --replicas=1 rc flipkart
+# kubectl delete -f rc.yml
