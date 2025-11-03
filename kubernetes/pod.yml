@@ -92,14 +92,15 @@ spec:
 # kubectl delete -f pod.yml
 # =============================================
 
----
 # cat ns.yml
+---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: dev
 
 # cat pod.yml
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -121,11 +122,13 @@ spec:
 # =============================================
 
 # cat ns.yml
+---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: dev
 # cat pod.yml
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -150,6 +153,7 @@ spec:
 # =============================================
 
 # cat rc.yml
+---
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -178,3 +182,160 @@ spec:
 # kubectl scale --replicas=4 rc flipkart
 # kubectl scale --replicas=1 rc flipkart
 # kubectl delete -f rc.yml
+
+# ============================================
+# cat rs.yml
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: flipkart
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ghatak
+  template:
+    metadata:
+      labels:
+        app: ghatak
+    spec:
+      containers:
+      - name: login
+        image: httpd
+        ports:
+          - containerPort: 80
+
+# command:
+# kubectl apply -f rs.yml
+# kubectl get pods
+# kubectl get rs
+# kubectl delete pod flipkart-9xf6r
+# kubectl get pods
+# kubectl delete -f rs.yml
+
+# ================================================
+
+# cat deploy.yml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flipkart
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ghatak
+  template:
+    metadata:
+      labels:
+        app: ghatak
+    spec:
+      containers:
+      - name: login
+        image: ubuntu
+        command: ["/bin/bash", "-c", "while true; do echo login v1.1; sleep 2; done"] # changto v1.2
+
+# commands:
+# kubectl apply -f deploy.yml
+# kubectl get all
+# kubectl exec -it flipkart-5ccf6f7dd-57qsh -- cat /etc/os-release
+# kubectl logs -f flipkart-5ccf6f7dd-57qsh
+# - change the script to v1.2
+# kubectl apply -f deploy.yml
+# kubectl get all
+# kubectl logs -f flipkart-8d5f5488f-5jsh6
+# kubectl rollout status deploy flipkart
+# kubectl rollout undo deploy flipkart
+# kubectl get pods
+# kubectl logs -f flipkart-5ccf6f7dd-cq5h6
+# kubectl delete -f deploy.yml
+
+# ==========================================================
+
+# cat deploy.yml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flipkart
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ghatak
+  template:
+    metadata:
+      labels:
+        app: ghatak
+    spec:
+      containers:
+      - name: login
+        image: httpd
+        ports:
+          - containerPort: 80
+
+# cat svc.yml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flipkartsvc
+spec:
+  selector:
+    app: ghatak
+  ports:
+    - name: sample
+      port: 80
+      targetPort: 80
+      nodePort: 30080 # no nodeport for ClusterIP
+  type: NodePort # ClusterIP
+
+# =================================================
+
+## Kube Deployment
+# cat deploy.yml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flipkart
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ghatak
+  template:
+    metadata:
+      labels:
+        app: ghatak
+    spec:
+      containers:
+      - name: login
+        image: sakit333/loan_pre_ml:latest
+        ports:
+          - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flipkartsvc
+spec:
+  selector:
+    app: ghatak
+  ports:
+    - name: sample
+      port: 80
+      targetPort: 5000
+      nodePort: 30080
+  type: NodePort
