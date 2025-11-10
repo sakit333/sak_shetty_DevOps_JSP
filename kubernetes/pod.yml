@@ -339,3 +339,140 @@ spec:
       targetPort: 5000
       nodePort: 30080
   type: NodePort
+
+# ==================================
+
+# emptyDir
+# cat emt.yml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+spec:
+  containers:
+    - name: login
+      image: ubuntu
+      command: ['sleep', 'infinity']
+      volumeMounts:
+        - name: backup
+          mountPath: /tmp/login
+    - name: home
+      image: ubuntu
+      command: ['sleep', '15000']
+      volumeMounts:
+        - name: backup
+          mountPath: /tmp/home
+  volumes:
+    - name: backup
+      emptyDir: {}
+
+# commands:
+# kubectl apply -f emt.yml
+# kubectl get pods
+# kubectl exec -it flipkart -c login -- /bin/bash
+# kubectl exec -it flipkart -c home -- /bin/bash
+# kubectl delete -f emt.yml
+
+# =======================================
+# HostPath
+
+# host.yml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+spec:
+  containers:
+    - name: login
+      image: ubuntu
+      command: ['sleep', 'infinity']
+      volumeMounts:
+        - name: backup
+          mountPath: /tmp/login
+    - name: home
+      image: ubuntu
+      command: ['sleep', '15000']
+      volumeMounts:
+        - name: backup
+          mountPath: /tmp/home
+  volumes:
+    - name: backup
+      hostPath:
+        path: /tmp/hostpath
+        type: DirectoryOrCreate
+
+# commands:
+# kubectl apply -f host.yml
+# kubectl get pods
+# kubectl exec -it flipkart -c login -- /bin/bash
+# kubectl exec -it flipkart -c home -- /bin/bash
+# kubectl delete -f host.yml
+
+# ==================================================
+
+# secret
+# create the file
+echo "username and password" >> sample.txt
+# create the object
+kubectl create secret generic sak-cred --from-file=sample.txt
+
+# cat sect.yml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+spec:
+  containers:
+    - name: login
+      image: ubuntu
+      command: ['sleep', 'infinity']
+      volumeMounts:
+        - name: sak-volume
+          mountPath: /tmp/login  
+  volumes:
+    - name: sak-volume
+      secret:
+        secretName: sak-cred
+
+# command:
+# kubectl apply -f pod.yml
+# kubectl get pods
+# kubectl exec -it flipkart -- /bin/bash
+# kubectl delete -f pod.yml
+# kubectl delete secret sak-cred
+
+# =====================================================
+
+# configMap
+# create the file
+echo "server configuration scripts" >> sample.txt
+# create the object
+kubectl create configmap sak-configmap --from-file=sample.txt
+
+# cat sect.yml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flipkart
+spec:
+  containers:
+    - name: login
+      image: ubuntu
+      command: ['sleep', 'infinity']
+      volumeMounts:
+        - name: sak-volume
+          mountPath: /tmp/login  
+  volumes:
+    - name: sak-volume
+      configMap:
+        name: sak-configmap  
+
+# command:
+# kubectl apply -f pod.yml
+# kubectl exec -it flipkart -- /bin/bash
+# kubectl delete -f pod.yml
+# kubectl delete configmap sak-configmap
